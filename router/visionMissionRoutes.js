@@ -2,6 +2,7 @@ import express from "express";
 
 import {
   getVisionMission,
+  getVisionMissionById,
   createVisionMission,
   updateVisionMission,
   deleteVisionMission,
@@ -22,6 +23,7 @@ const upload = multer({ storage });
 
 // Routes
 router.get("/", getVisionMission);
+router.get("/:id", getVisionMissionById);
 router.post("/", upload.array("images", 4), createVisionMission);
 router.put("/:id", upload.array("images", 4), updateVisionMission);
 router.delete("/:id", deleteVisionMission);
