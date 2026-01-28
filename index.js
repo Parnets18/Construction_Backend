@@ -48,7 +48,7 @@ app.use("/api/services", serviceRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/vision-Mission", visionMissionRoutes);
 app.use("/api/banners", bannerRoutes);
-// app.use("/api/contactcards", contactCardRoutes);
+app.use("/api/contactcards", contactCardRoutes);
 app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/admin", loginRoutes);
 app.use("/api/videos", videoRoutes);
@@ -56,11 +56,6 @@ app.use("/api/videos", videoRoutes);
 // Test route to verify server is working
 app.get("/api/test", (req, res) => {
   res.json({ message: "Server is working!" });
-});
-
-// Simple contactcards route for testing
-app.get("/api/contactcards", (req, res) => {
-  res.json({ message: "Contact cards endpoint is working!", data: [] });
 });
 
 // DB connect

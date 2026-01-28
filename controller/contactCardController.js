@@ -13,20 +13,40 @@ export const getContactCards = async (req, res) => {
 // CREATE new contact card
 export const createContactCard = async (req, res) => {
   try {
-    const { title, type, value, icon } = req.body;
+    const { title, type, phone, email, address } = req.body;
 
     // Validation
-    if (!title || !type || !value || !icon) {
+    if (!title || !type) {
       return res.status(400).json({ 
-        message: "All fields are required: title, type, value, icon" 
+        message: "Title and type are required" 
+      });
+    }
+
+    // Type-specific validation
+    if (type === "phone" && (!phone || phone.length === 0 || phone.some(p => !p.trim()))) {
+      return res.status(400).json({ 
+        message: "At least one phone number is required for phone type" 
+      });
+    }
+
+    if (type === "email" && (!email || email.length === 0 || email.some(e => !e.trim()))) {
+      return res.status(400).json({ 
+        message: "At least one email address is required for email type" 
+      });
+    }
+
+    if (type === "address" && (!address || !address.trim())) {
+      return res.status(400).json({ 
+        message: "Address is required for address type" 
       });
     }
 
     const newContactCard = new ContactCard({
       title,
       type,
-      value,
-      icon
+      phone: type === "phone" ? phone : [],
+      email: type === "email" ? email : [],
+      address: type === "address" ? address : ""
     });
 
     const saved = await newContactCard.save();
@@ -39,18 +59,43 @@ export const createContactCard = async (req, res) => {
 // UPDATE contact card
 export const updateContactCard = async (req, res) => {
   try {
-    const { title, type, value, icon } = req.body;
+    const { title, type, phone, email, address } = req.body;
 
     // Validation
-    if (!title || !type || !value || !icon) {
+    if (!title || !type) {
       return res.status(400).json({ 
-        message: "All fields are required: title, type, value, icon" 
+        message: "Title and type are required" 
+      });
+    }
+
+    // Type-specific validation
+    if (type === "phone" && (!phone || phone.length === 0 || phone.some(p => !p.trim()))) {
+      return res.status(400).json({ 
+        message: "At least one phone number is required for phone type" 
+      });
+    }
+
+    if (type === "email" && (!email || email.length === 0 || email.some(e => !e.trim()))) {
+      return res.status(400).json({ 
+        message: "At least one email address is required for email type" 
+      });
+    }
+
+    if (type === "address" && (!address || !address.trim())) {
+      return res.status(400).json({ 
+        message: "Address is required for address type" 
       });
     }
 
     const updated = await ContactCard.findByIdAndUpdate(
       req.params.id,
-      { title, type, value, icon },
+      { 
+        title, 
+        type, 
+        phone: type === "phone" ? phone : [],
+        email: type === "email" ? email : [],
+        address: type === "address" ? address : ""
+      },
       { new: true, runValidators: true }
     );
 

@@ -11,15 +11,14 @@ const contactCardSchema = new mongoose.Schema(
       required: true,
       enum: ["phone", "email", "address"]
     },
-    value: { 
-      type: String, 
-      required: true 
-    },
-    icon: { 
-      type: String, 
-      required: true,
-      enum: ["phone", "email", "location"],
-      default: "phone"
+    phone: [{ 
+      type: String 
+    }],
+    email: [{ 
+      type: String 
+    }],
+    address: { 
+      type: String 
     }
   },
   { timestamps: true }
