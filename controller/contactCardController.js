@@ -13,45 +13,37 @@ export const getContactCards = async (req, res) => {
 // CREATE new contact card
 export const createContactCard = async (req, res) => {
   try {
-    const { title, type, phone, email, address } = req.body;
+    console.log("Received request body:", req.body); // Debug log
+    const { phone, email, address } = req.body;
 
     // Validation
-    if (!title || !type) {
+    if (!phone || !email || !address) {
+      console.log("Validation failed:", { phone: !!phone, email: !!email, address: !!address }); // Debug log
       return res.status(400).json({ 
-        message: "Title and type are required" 
+        message: "Phone number, email, and address are required" 
       });
     }
 
-    // Type-specific validation
-    if (type === "phone" && (!phone || phone.length === 0 || phone.some(p => !p.trim()))) {
+    // Email format validation
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(email)) {
+      console.log("Email validation failed:", email); // Debug log
       return res.status(400).json({ 
-        message: "At least one phone number is required for phone type" 
-      });
-    }
-
-    if (type === "email" && (!email || email.length === 0 || email.some(e => !e.trim()))) {
-      return res.status(400).json({ 
-        message: "At least one email address is required for email type" 
-      });
-    }
-
-    if (type === "address" && (!address || !address.trim())) {
-      return res.status(400).json({ 
-        message: "Address is required for address type" 
+        message: "Invalid email format" 
       });
     }
 
     const newContactCard = new ContactCard({
-      title,
-      type,
-      phone: type === "phone" ? phone : [],
-      email: type === "email" ? email : [],
-      address: type === "address" ? address : ""
+      phone: phone.trim(),
+      email: email.trim(),
+      address: address.trim()
     });
 
     const saved = await newContactCard.save();
+    console.log("Contact card saved successfully:", saved); // Debug log
     res.status(201).json(saved);
   } catch (error) {
+    console.error("Error in createContactCard:", error); // Debug log
     res.status(400).json({ message: "Error creating contact card", error: error.message });
   }
 };
@@ -59,42 +51,29 @@ export const createContactCard = async (req, res) => {
 // UPDATE contact card
 export const updateContactCard = async (req, res) => {
   try {
-    const { title, type, phone, email, address } = req.body;
+    const { phone, email, address } = req.body;
 
     // Validation
-    if (!title || !type) {
+    if (!phone || !email || !address) {
       return res.status(400).json({ 
-        message: "Title and type are required" 
+        message: "Phone number, email, and address are required" 
       });
     }
 
-    // Type-specific validation
-    if (type === "phone" && (!phone || phone.length === 0 || phone.some(p => !p.trim()))) {
+    // Email format validation
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(email)) {
       return res.status(400).json({ 
-        message: "At least one phone number is required for phone type" 
-      });
-    }
-
-    if (type === "email" && (!email || email.length === 0 || email.some(e => !e.trim()))) {
-      return res.status(400).json({ 
-        message: "At least one email address is required for email type" 
-      });
-    }
-
-    if (type === "address" && (!address || !address.trim())) {
-      return res.status(400).json({ 
-        message: "Address is required for address type" 
+        message: "Invalid email format" 
       });
     }
 
     const updated = await ContactCard.findByIdAndUpdate(
       req.params.id,
       { 
-        title, 
-        type, 
-        phone: type === "phone" ? phone : [],
-        email: type === "email" ? email : [],
-        address: type === "address" ? address : ""
+        phone: phone.trim(),
+        email: email.trim(),
+        address: address.trim()
       },
       { new: true, runValidators: true }
     );

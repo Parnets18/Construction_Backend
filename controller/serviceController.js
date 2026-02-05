@@ -40,17 +40,14 @@ export const getServiceById = async (req, res) => {
 // 🔹 Create new service
 export const createService = async (req, res) => {
   try {
-    const { title, description, text, paragraph, details, features } = req.body;
+    const { title, paragraph, features } = req.body;
 
     const featureArray = parseFeatures(features);
     const images = req.files ? req.files.map((file) => file.filename) : [];
 
     const newService = new Service({
       title,
-      description,
-      text,
       paragraph,
-      details,
       features: featureArray,
       images,
     });
@@ -66,16 +63,13 @@ export const createService = async (req, res) => {
 // 🔹 Update service
 export const updateService = async (req, res) => {
   try {
-    const { title, description, text, paragraph, details, features } = req.body;
+    const { title, paragraph, features } = req.body;
 
     const featureArray = parseFeatures(features);
 
     let updateData = {
       title,
-      description,
-      text,
       paragraph,
-      details,
       features: featureArray,
     };
 

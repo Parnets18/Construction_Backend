@@ -2,9 +2,16 @@ import mongoose from "mongoose";
 
 const aboutSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  text: { type: String },       // naya field
-  paragraph: { type: String },  // naya field
-  image: { type: String },      // image ka naam/URL
+  description: { type: String, required: true },
+  image: { type: String },
+  stats: [{
+    number: { type: String, required: true },
+    label: { type: String, required: true },
+    suffix: { type: String, default: "+" }
+  }],
+  isActive: { type: Boolean, default: true }
+}, {
+  timestamps: true
 });
 
 const About = mongoose.model("About", aboutSchema);

@@ -1,12 +1,11 @@
 import mongoose from "mongoose";
 const contactSchema = new mongoose.Schema(
   {
-    title: { type: String,  },
-    // type: { type: String },
-    phone: [{ type: String }],
-    email: { type: String },
+    title: { type: String, required: true },
+    phone: { type: String }, // Changed from array to string
+    email: { type: String, required: true },
     subject: { type: String },
-    message: { type:String},
+    message: { type: String, required: true },
   },
   { timestamps: true }
 );

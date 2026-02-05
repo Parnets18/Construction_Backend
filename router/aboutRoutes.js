@@ -3,8 +3,10 @@ import multer from "multer";
 import {
   createAbout,
   getAbout,
+  getAboutById,
   updateAbout,
   deleteAbout,
+  getAllAbout,
 } from "../controller/aboutController.js";
 
 const router = express.Router();
@@ -23,7 +25,9 @@ const upload = multer({ storage: storage });
 
 // Routes
 router.post("/", upload.single("image"), createAbout);
-router.get("/", getAbout); // Pagination handled in controller
+router.get("/", getAbout); // Get active about section for frontend
+router.get("/all", getAllAbout); // Get all about sections for admin
+router.get("/:id", getAboutById); // Get specific about section
 router.put("/:id", upload.single("image"), updateAbout);
 router.delete("/:id", deleteAbout);
 

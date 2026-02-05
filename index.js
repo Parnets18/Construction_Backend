@@ -14,6 +14,7 @@ import contactCardRoutes from "./router/contactCardRoutes.js";
 import testimonialRoutes from "./router/testimonialsRoutes.js";
 import loginRoutes from "./router/loginRoutes.js";
 import videoRoutes from "./router/videoRoutes.js";
+import projectRoutes from "./router/projectRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -39,10 +40,15 @@ app.use(
   "/uploads/testimonials",
   express.static(path.join(__dirname, "uploads/testimonials"))
 );
+app.use(
+  "/uploads/projects",
+  express.static(path.join(__dirname, "uploads/projects"))
+);
 app.use("/banner", express.static(path.join(__dirname, "upload/banner")));
 
 // app.use("/services", express.static(path.join(__dirname, "uploads/services")));
 // Routes
+app.use("/api/projects", projectRoutes);
 app.use("/api/about", aboutRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/contacts", contactRoutes);

@@ -153,12 +153,38 @@ export const getContactStats = async (req, res) => {
 // CREATE new contact
 export const createContact = async (req, res) => {
   try {
-    const { title, phone, email, subject, message } = req.body;
-    const newContact = new Contact({ title, phone, email, subject, message });
+    console.log("Received contact data:", req.body);
+    const { title, fullName, phone, email, subject, message } = req.body;
+    
+    // Use fullName if provided, otherwise use title for backward compatibility
+    const name = fullName || title;
+    
+    if (!name || !email || !message) {
+      return res.status(400).json({ 
+        message: "Missing required fields", 
+        required: ["title/fullName", "email", "message"],
+        received: req.body
+      });
+    }
+    
+    const newContact = new Contact({ 
+      title: name, 
+      phone: phone || "", 
+      email, 
+      subject: subject || "", 
+      message 
+    });
+    
     const saved = await newContact.save();
-    res.status().json(saved);
+    console.log("Contact saved successfully:", saved);
+    res.status(201).json(saved);
   } catch (error) {
-    res.status(400).json({ message: "Error creating contact", error });
+    console.error("Error creating contact:", error);
+    res.status(400).json({ 
+      message: "Error creating contact", 
+      error: error.message,
+      details: error
+    });
   }
 };
 

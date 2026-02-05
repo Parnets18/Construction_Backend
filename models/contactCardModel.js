@@ -2,23 +2,17 @@ import mongoose from "mongoose";
 
 const contactCardSchema = new mongoose.Schema(
   {
-    title: { 
+    phone: { 
       type: String, 
-      required: true 
+      required: true
     },
-    type: { 
+    email: { 
       type: String, 
-      required: true,
-      enum: ["phone", "email", "address"]
+      required: true
     },
-    phone: [{ 
-      type: String 
-    }],
-    email: [{ 
-      type: String 
-    }],
     address: { 
-      type: String 
+      type: String, 
+      required: true
     }
   },
   { timestamps: true }
