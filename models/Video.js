@@ -1,14 +1,16 @@
 import mongoose from "mongoose";
 
-const videoSchema = new mongoose.Schema(
+const mediaBannerSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
-    videos: { type: [String], default: [] }, // Array of video paths
     images: { type: [String], default: [] }, // Array of image paths
-    mediaType: { type: String, enum: ["image", "video", "mixed"], default: "mixed" }
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    strict: true // Enforce schema
+  }
 );
 
-export default mongoose.model("Video", videoSchema);
+// Use "MediaBanner" model name to avoid conflict with existing Banner model
+export default mongoose.models.MediaBanner || mongoose.model("MediaBanner", mediaBannerSchema);

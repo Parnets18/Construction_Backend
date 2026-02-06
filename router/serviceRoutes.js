@@ -1,31 +1,18 @@
 import express from "express";
-
 import {
   getServices,
-  getServiceById, // 👈 new controller
+  getServiceById,
   createService,
   updateService,
   deleteService,
 } from "../controller/serviceController.js";
-import multer from "multer";
+import upload from "../middleware/upload.js";
+
 const router = express.Router();
 
-// ✅ Multer storage config
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/services"); // folder banake rakhna
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + "_" + file.originalname;
-    cb(null, uniqueName);
-  },
-});
-
-const upload = multer({ storage });
-
-// ✅ Routes
-router.get("/", getServices); // Get all services
-router.get("/:id", getServiceById); // Get service by ID 👈
+// Routes
+router.get("/", getServices);
+router.get("/:id", getServiceById);
 router.post("/", upload.array("images", 5), createService);
 router.put("/:id", upload.array("images", 5), updateService);
 router.delete("/:id", deleteService);

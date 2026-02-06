@@ -1,38 +1,35 @@
-import Media from "../models/Video.js"; // Make sure this path is correct
+import MediaBanner from "../models/Video.js";
 
-// CREATE
+// CREATE - Only images
 export const createMedia = async (req, res) => {
   try {
+    console.log("========= CREATE BANNER REQUEST =========");
+    console.log("Request Body:", req.body);
+    console.log("Request Files:", req.files);
+    
     const { title, description } = req.body;
 
-    // Separate files into images and videos
-    const videos = [];
-    const images = [];
+    // Get image paths from uploaded files
+    const images = req.files ? req.files.map((file) => file.filename) : [];
 
-    req.files.forEach((file) => {
-      if (file.mimetype.startsWith("video/")) {
-        videos.push(file.path);
-      } else if (file.mimetype.startsWith("image/")) {
-        images.push(file.path);
-      }
-    });
+    if (images.length === 0) {
+      console.log("No images provided");
+      return res.status(400).json({ message: "At least one image is required" });
+    }
 
-    // Determine media type
-    let mediaType = "mixed";
-    if (videos.length > 0 && images.length === 0) mediaType = "video";
-    if (images.length > 0 && videos.length === 0) mediaType = "image";
+    console.log("Creating banner with images:", images);
 
-    const newMedia = new Media({
+    const newBanner = new MediaBanner({
       title,
       description,
-      videos,
       images,
-      mediaType,
     });
-    await newMedia.save();
 
-    res.status(201).json(newMedia);
+    await newBanner.save();
+    console.log("Banner created successfully:", newBanner);
+    res.status(201).json(newBanner);
   } catch (err) {
+    console.error("Error creating banner:", err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -40,8 +37,8 @@ export const createMedia = async (req, res) => {
 // GET ALL
 export const getMedia = async (req, res) => {
   try {
-    const media = await Media.find();
-    res.status(200).json(media);
+    const banners = await MediaBanner.find().sort({ createdAt: -1 });
+    res.status(200).json(banners);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -50,9 +47,9 @@ export const getMedia = async (req, res) => {
 // GET SINGLE
 export const getMediaItem = async (req, res) => {
   try {
-    const media = await Media.findById(req.params.id);
-    if (!media) return res.status(404).json({ message: "Media not found" });
-    res.status(200).json(media);
+    const banner = await MediaBanner.findById(req.params.id);
+    if (!banner) return res.status(404).json({ message: "Banner not found" });
+    res.status(200).json(banner);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -61,39 +58,44 @@ export const getMediaItem = async (req, res) => {
 // UPDATE
 export const updateMedia = async (req, res) => {
   try {
+    console.log("========= UPDATE BANNER REQUEST =========");
+    console.log("Request Body:", req.body);
+    console.log("Request Files:", req.files);
+    console.log("Banner ID:", req.params.id);
+    
     const { title, description } = req.body;
 
-    let videos = [];
-    let images = [];
-    let mediaType = "mixed";
+    // Build update data with only the fields we want
+    const updateData = {};
+    
+    if (title) updateData.title = title;
+    if (description) updateData.description = description;
 
+    // If new images are uploaded, update them
     if (req.files && req.files.length > 0) {
-      req.files.forEach((file) => {
-        if (file.mimetype.startsWith("video/")) {
-          videos.push(file.path);
-        } else if (file.mimetype.startsWith("image/")) {
-          images.push(file.path);
-        }
-      });
-
-      if (videos.length > 0 && images.length === 0) mediaType = "video";
-      if (images.length > 0 && videos.length === 0) mediaType = "image";
+      updateData.images = req.files.map((file) => file.filename);
+      console.log("New images uploaded:", updateData.images);
+    } else {
+      console.log("No new images uploaded");
     }
 
-    const updatedMedia = await Media.findByIdAndUpdate(
+    console.log("Update data being sent:", updateData);
+
+    const updatedBanner = await MediaBanner.findByIdAndUpdate(
       req.params.id,
-      {
-        title,
-        description,
-        ...(req.files && { videos, images, mediaType }),
-      },
-      { new: true }
+      { $set: updateData }, // Use $set to explicitly update only these fields
+      { new: true, runValidators: true }
     );
 
-    if (!updatedMedia)
-      return res.status(404).json({ message: "Media not found" });
-    res.status(200).json(updatedMedia);
+    if (!updatedBanner) {
+      console.log("Banner not found with ID:", req.params.id);
+      return res.status(404).json({ message: "Banner not found" });
+    }
+    
+    console.log("Banner updated successfully:", updatedBanner);
+    res.status(200).json(updatedBanner);
   } catch (err) {
+    console.error("Error updating banner:", err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -101,10 +103,10 @@ export const updateMedia = async (req, res) => {
 // DELETE
 export const deleteMedia = async (req, res) => {
   try {
-    const deletedMedia = await Media.findByIdAndDelete(req.params.id);
-    if (!deletedMedia)
-      return res.status(404).json({ message: "Media not found" });
-    res.status(200).json({ message: "Media deleted successfully" });
+    const deletedBanner = await MediaBanner.findByIdAndDelete(req.params.id);
+    if (!deletedBanner)
+      return res.status(404).json({ message: "Banner not found" });
+    res.status(200).json({ message: "Banner deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
